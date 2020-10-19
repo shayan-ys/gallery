@@ -10,7 +10,7 @@ class Media(models.Model):
     caption = models.TextField(max_length=2070, blank=True)
 
     file_local = models.FileField(upload_to='uploads/%Y/%m/')
-    file_cloud = models.FileField(upload_to='uploads/%Y/%m/', storage=GoogleCloudStorage)
+    # file_cloud = models.FileField(upload_to='uploads/%Y/%m/', storage=GoogleCloudStorage)
     instagram_url = models.URLField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
