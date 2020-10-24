@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from google.oauth2 import service_account
+from mongoengine import connect
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,6 +78,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+connect('gallery', host='mongodb://local_django:1pB5aYAuXiNuBz4h@cluster0.46etg.mongodb.net/gallery-photo-urls.gallery?retryWrites=true&w=majority')
 
 
 # Password validation
@@ -115,8 +117,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'portfolio-gallery'
 GS_CLASS = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     BASE_DIR / 'avid-bricolage-277519-50dd620c72a0.json'
 )
+
+# Constants
+THUMBNAIL_SIZE = 293
