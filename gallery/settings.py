@@ -78,7 +78,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-connect('gallery', host='mongodb://local_django:1pB5aYAuXiNuBz4h@cluster0.46etg.mongodb.net/gallery-photo-urls.gallery?retryWrites=true&w=majority')
+connect('gallery', host='mongodb+srv://local_django:1pB5aYAuXiNuBz4h@cluster0.46etg.mongodb.net/gallery-photo-urls.gallery?retryWrites=true&w=majority')
 
 
 # Password validation
@@ -123,6 +123,13 @@ GS_CLASS = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     BASE_DIR / 'avid-bricolage-277519-50dd620c72a0.json'
 )
+try:
+    from urllib.parse import urljoin, urlparse
+    from storages.backends.gcloud import GoogleCloudStorage
+    gs_url = GoogleCloudStorage().url('')
+    GS_BASE_URL = urljoin(gs_url, urlparse(gs_url).path)
+except:
+    GS_BASE_URL = "https://storage.googleapis.com/portfolio-gallery/"
 
 # Constants
 THUMBNAIL_SIZE = 293

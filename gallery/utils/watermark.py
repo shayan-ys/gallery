@@ -30,7 +30,7 @@ def add_watermark(file):
     text_canvas.putalpha(170)
 
     photo.paste(text_canvas, pos, text_canvas)
-    # photo = photo.convert('RGB')
+    return photo
 
     blob = BytesIO()
     photo.save(blob, 'JPEG')

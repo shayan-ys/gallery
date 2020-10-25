@@ -21,7 +21,8 @@ from django.dispatch import receiver
 
 class Photo(mongo.Document):
     title = mongo.StringField(max_length=130, required=True)
-    url_source = mongo.URLField()
+    uuid = mongo.UUIDField(binary=False)
+    urls_json = mongo.StringField()
 
 
 # class Media(models.Model):
