@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="{% url 'upload' %}">upload</a>
+    <ul>
+    {% for photo in photo_objects %}
+        <li>{{ photo.title }}:
+            {% for url in photo.urls %}
+                {{ url }} |
+            {% endfor %}
+            <a href="{% url 'delete' photo.id %}">delete</a>
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

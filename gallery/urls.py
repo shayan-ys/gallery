@@ -19,11 +19,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
-from gallery.views import upload_photo_handler
+from gallery import views
 
 urlpatterns = [
-    # path('post/', TemplateView.as_view(template_name="gallery/upload_photo.html")),
-    path('upload/', upload_photo_handler, name='upload'),
+    path('', views.list_photo_view, name='list'),
+    path('upload/', views.upload_photo_handler, name='upload'),
+    path('delete/<str:pk>/', views.delete_photo_view, name='delete'),
 
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
