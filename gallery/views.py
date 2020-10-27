@@ -67,5 +67,7 @@ def handle_uploaded_file(photo_file, photo_db: Photo):
 
     photo_db.uuid = photo_uuid
     photo_db.filenames_json = json.dumps(photo_filenames)
+    w, h = signed_photo.size
+    photo_db.img_ratio = w / h
     photo_db.save()
     return photo_db

@@ -31,7 +31,3 @@ def add_watermark(file):
 
     photo.paste(text_canvas, pos, text_canvas)
     return photo
-
-    blob = BytesIO()
-    photo.save(blob, 'JPEG')
-    return blob.getvalue()

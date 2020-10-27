@@ -1,20 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <a href="{% url 'upload' %}">upload</a>
-    <ul>
-    {% for photo in photo_objects %}
-        <li>{{ photo.title }}:
-            {% for url in photo.urls %}
-                {{ url }} |
-            {% endfor %}
-            <a href="{% url 'delete' photo.id %}">delete</a>
-        </li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'gallery/base.html' %}
+{% load static %}
+{% load photo_utils %}
+
+{% block head_end %}
+    <link rel="stylesheet" href="{% static 'photoswipe/photoswipe.css' %}">
+    <link rel="stylesheet" href="{% static 'photoswipe/default-skin.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+        {% for photo in photo_objects %}
+
+            <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+                <a href="{{ photo|get_url:2000 }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:2000 }}">
+                    <img src="{{ photo|get_url:600 }}" itemprop="thumbnail" alt="{{ photo.title }}" />
+                </a>
+                <figcaption itemprop="caption description">{{ photo.title }}</figcaption>
+            </figure>
+            {#  <a href="{% url 'delete' photo.id %}">delete</a> #}
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block body_end %}
+    {% include 'gallery/include/photoswipe_element.html' %}
+    <script src="{% static 'photoswipe/photoswipe.min.js' %}"></script>
+    <script src="{% static 'photoswipe/photoswipe-ui-default.min.js' %}"></script>
+    <script src="{% static 'js/photoswipe-init.js' %}"></script>
+{% endblock %}
