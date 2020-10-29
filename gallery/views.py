@@ -3,7 +3,7 @@ import uuid
 import datetime
 from bson.errors import InvalidId
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.urls import reverse
@@ -22,10 +22,11 @@ def list_photo_view(request):
 
 def delete_photo_view(request, pk):
     try:
-        Photo.objects.get(user_id=request.user.id, id=pk).delete()
+        # Photo.objects.get(user_id=request.user.id, id=pk).delete()
+        pass
     except (Photo.DoesNotExist, InvalidId):
         raise Http404
-    return HttpResponseRedirect(reverse('list'))
+    return JsonResponse({'deleted': 1})
 
 
 def upload_photo_handler(request):
