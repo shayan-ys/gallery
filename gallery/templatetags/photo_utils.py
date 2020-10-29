@@ -5,7 +5,8 @@ register = template.Library()
 
 @register.filter
 def get_photo_dimensions(photo, size_point: int):
-    return '%sx%s' % photo.get_dimensions(size_point)
+    w, h = photo.get_dimensions(size_point)
+    return f'{w}x{h}'
 
 
 @register.filter

@@ -12,8 +12,8 @@
         {% for photo in photo_objects %}
 
             <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-                <a href="{{ photo|get_url:2000 }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:2000 }}">
-                    <img src="{{ photo|get_url:600 }}" itemprop="thumbnail" alt="{{ photo.title }}" />
+                <a href="{{ photo|get_url:FULL }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:FULL }}">
+                    <img src="{{ photo|get_url:MEDIUM }}" itemprop="thumbnail" alt="{{ photo.title }}" />
                 </a>
                 <figcaption itemprop="caption description">{{ photo.title }}</figcaption>
             </figure>

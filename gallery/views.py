@@ -2,14 +2,11 @@ import json
 import uuid
 import datetime
 from bson.errors import InvalidId
-from storages.backends.gcloud import GoogleCloudStorage
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
-from django.conf import settings
 from django.core.files.storage import default_storage
 from django.urls import reverse
-from django.views.generic.list import ListView
 
 from .forms import PhotoUploadForm
 from .models import Photo
@@ -54,7 +51,7 @@ def handle_uploaded_file(photo_file, photo_db: Photo):
     now = datetime.datetime.now()
 
     signed_photo = add_watermark(photo_file)
-    for size, thumb in get_thumbnails(signed_photo, sizes=[2000, 1000, 600]):
+    for size, thumb in get_thumbnails(signed_photo):
 
         filename = "user_{user_id}/year_{year}/month_{month}/IMG_{uuid}_{size}.jpg".format(
             user_id=photo_db.user_id, year=now.year, month=now.month, uuid=photo_uuid, size=str(size)

@@ -139,6 +139,7 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
         // define options (if needed)
         options = {
 
+            showHideOpacity: true,
             // define gallery index (for URL)
             galleryUID: galleryElement.getAttribute('data-pswp-uid'),
 
@@ -148,7 +149,7 @@ var initPhotoSwipeFromDOM = function(gallerySelector) {
                     pageYScroll = window.pageYOffset || document.documentElement.scrollTop,
                     rect = thumbnail.getBoundingClientRect();
 
-                return {x:rect.left, y:rect.top + pageYScroll, w:rect.width};
+                return {x:rect.left, y:rect.top + pageYScroll, w:293};
             }
 
         };

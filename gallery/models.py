@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.conf import settings
 
+from .utils.const import is_square
+
 
 class Photo(mongo.Document):
     title = mongo.StringField(max_length=130, required=True)
@@ -25,8 +27,8 @@ class Photo(mongo.Document):
         else:  # create
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-        super(Photo, self).save(force_insert, validate, clean, write_concern, cascade, cascade_kwargs, _refs,
-                                save_condition, signal_kwargs)
+        super(Photo, self).save(force_insert, validate, clean, write_concern, cascade, cascade_kwargs,
+                                _refs, save_condition, signal_kwargs)
 
     @property
     def urls(self):
@@ -47,13 +49,11 @@ class Photo(mongo.Document):
         return filter(Photo.filter_size_filename, size_filenames_tuple)
         # return filter(lambda size_filename: default_storage.exists(size_filename[1]), size_filenames_tuple)
 
-    def get_dimensions(self, size_point: int):
-        if self.img_ratio < 1:
-            # size: height
-            return int(size_point * self.img_ratio), size_point
+    def get_dimensions(self, size_point: int) -> (int, int):
+        if is_square(size_point):
+            return size_point, size_point
         else:
-            # size: width
-            return size_point, int(size_point * self.img_ratio)
+            return int(size_point * self.img_ratio), size_point
 
     def delete(self, signal_kwargs=None, **write_concern):
         for _, filename in self.filenames:

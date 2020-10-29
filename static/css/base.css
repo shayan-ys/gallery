@@ -35,18 +35,25 @@ body {
 }
 
 .my-gallery {
-  width: 100%;
-  float: left;
+  width: 935px;
+  /*float: left;*/
+  margin: 60px auto;
 }
 .my-gallery img {
-  width: 100%;
-  height: auto;
+  /*width: 100%;*/
+  /*height: auto;*/
+  width: 293px;
+  height: 293px;
+  object-fit: cover;
 }
 .my-gallery figure {
   display: block;
   float: left;
-  margin: 0 5px 5px 0;
-  width: 150px;
+  margin: 0 28px 28px 0;
+  width: 293px;
+}
+.my-gallery figure:nth-child(3n) {
+  margin-right: 0;
 }
 .my-gallery figcaption {
   display: none;
