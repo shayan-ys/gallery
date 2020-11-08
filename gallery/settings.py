@@ -63,6 +63,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'gallery.context_processor.rendition_sizes_renderer',
                 'gallery.context_processor.sizes_renderer',
+                'gallery.context_processor.settings_renderer',
             ],
         },
     },

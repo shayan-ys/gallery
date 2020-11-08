@@ -66,7 +66,6 @@
 					captionEl: true,
 					fullscreenEl: true,
 					zoomEl: true,
-					deleteEl: true,
 					shareEl: true,
 					counterEl: true,
 					arrowEl: true,
@@ -169,37 +168,6 @@
 				},
 				_toggleShareModalClass = function() {
 					_togglePswpClass(_shareModal, 'share-modal--hidden', _shareModalHidden);
-				},
-				_deleteItem = function() {
-					var xhttp = new XMLHttpRequest();
-					xhttp.open("GET", pswp.currItem.el.dataset.delete_url, true);
-					xhttp.onreadystatechange = function() {
-						if (this.readyState === 4 && this.status === 200) {
-
-							// Response
-							var response = JSON.parse(this.responseText);
-							if (response.hasOwnProperty('deleted')) {
-								if (response['deleted']) {
-									const _currentIndex = pswp.getCurrentIndex();
-									const _currentNodeId = pswp.currItem.el.id;
-									if (_galleryHasOneSlide) {
-										pswp.close();
-									} else {
-										pswp.next();
-									}
-									pswp.items.splice(_currentIndex, 1);
-									document.getElementById(_currentNodeId).remove();
-									// sets a flag that slides should be updated
-									pswp.invalidateCurrItems();
-									// updates the content of slides
-									pswp.updateSize(true);
-									pswp.ui.update();
-								}
-							}
-
-						}
-					};
-					xhttp.send();
 				},
 				_toggleShareModal = function() {
 
@@ -481,15 +449,6 @@
 					name: 'button--zoom',
 					option: 'zoomEl',
 					onTap: pswp.toggleDesktopZoom
-				},
-				{
-					name: 'button--delete',
-					option: 'deleteEl',
-					onTap: function() {
-						if (confirm("Delete?")) {
-							_deleteItem();
-						}
-					}
 				},
 				{
 					name: 'counter',

@@ -1,9 +1,8 @@
 from django import template
-from ..utils.const import is_square
 
 register = template.Library()
 
 
-@register.filter(name='is_square')
-def is_square_filter(size_point: int) -> bool:
-    return is_square(size_point)
+@register.filter(name='url')
+def get_url_for_size_filter(photo, size_point: int) -> str:
+    return photo.get_url_for_size(size_point)

@@ -1,19 +1,14 @@
 from PIL import Image
-from .const import Size, rendition_sizes, is_square
+from ..models import rendition_sizes
 
 
-def get_thumbnails(photo: Image, sizes: [Size] = rendition_sizes) -> [int, Image]:
+def get_thumbnails(photo: Image, sizes: [int] = rendition_sizes) -> [int, Image]:
     thumbnails = []
 
-    size: Size
     for size in sizes:
         thumb = photo.copy()
-
-        if is_square(size):
-            thumb = crop_max_square(thumb)
-        thumb.thumbnail((size.value, size.value), resample=Image.ANTIALIAS)
-
-        thumbnails.append((size.value, thumb))
+        thumb.thumbnail((size, size), resample=Image.ANTIALIAS)
+        thumbnails.append((size, thumb))
 
     return thumbnails
 

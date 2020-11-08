@@ -1,5 +1,3 @@
-import json
-import uuid
 import datetime
 from bson.errors import InvalidId
 
@@ -16,7 +14,8 @@ from gallery.utils.thumbnail import get_thumbnails
 
 
 def list_photo_view(request):
-    photos = Photo.objects.filter(user_id=request.user.id).all_fields()
+    # photos = filter(user_id=request.user.id)
+    photos = Photo.objects.all_fields()
     return render(request, 'gallery/list_photo.html', {'photo_objects': photos})
 
 
@@ -47,7 +46,6 @@ def upload_photo_handler(request):
 
 
 def handle_uploaded_file(photo_file, photo_db: Photo):
-    photo_uuid = uuid.uuid5(uuid.uuid4(), str(photo_db.user_id))
     photo_filenames = {}
     now = datetime.datetime.now()
 
@@ -55,7 +53,7 @@ def handle_uploaded_file(photo_file, photo_db: Photo):
     for size, thumb in get_thumbnails(signed_photo):
 
         filename = "user_{user_id}/year_{year}/month_{month}/IMG_{uuid}_{size}.jpg".format(
-            user_id=photo_db.user_id, year=now.year, month=now.month, uuid=photo_uuid, size=str(size)
+            user_id=photo_db.user_id, year=now.year, month=now.month, uuid=photo_db.uuid, size=str(size)
         )
         with default_storage.open(filename, 'wb+') as destination:
 
@@ -63,8 +61,7 @@ def handle_uploaded_file(photo_file, photo_db: Photo):
             destination.write(bytes_photo)
             photo_filenames[size] = filename
 
-    photo_db.uuid = photo_uuid
-    photo_db.filenames_json = json.dumps(photo_filenames)
+    photo_db.set_filenames(photo_filenames)
     w, h = signed_photo.size
     photo_db.img_ratio = w / h
     photo_db.save()
