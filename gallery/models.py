@@ -1,6 +1,7 @@
 import uuid
-from datetime import datetime
-import mongoengine as mongo
+import json
+import typing
+from djongo import models
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -11,54 +12,30 @@ from .utils import get_closest
 rendition_sizes = [25, 150, 480, 1080, 1920]
 
 
-class TimedDocument(mongo.Document):
-    created_at = mongo.DateTimeField()
-    updated_at = mongo.DateTimeField()
+class Photo(models.Model):
+    title = models.CharField(max_length=130)
+    uuid = models.UUIDField(blank=True, null=True)
 
-    meta = {
-        'abstract': True,
-    }
+    filename_1920 = models.CharField(max_length=240, blank=True, null=True)
+    filename_1080 = models.CharField(max_length=240, blank=True, null=True)
+    filename_480 = models.CharField(max_length=240, blank=True, null=True)
+    filename_150 = models.CharField(max_length=240, blank=True, null=True)
+    filename_25 = models.CharField(max_length=240, blank=True, null=True)
+    sizes = models.JSONField()
 
-    def save(self, force_insert=False, validate=True, clean=True, write_concern=None, cascade=None, cascade_kwargs=None, _refs=None, save_condition=None, signal_kwargs=None, **kwargs):
+    img_ratio = models.FloatField()
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_time = models.DateTimeField(blank=True, null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.id:  # update
-            self.updated_at = datetime.now()
+            pass
         else:  # create
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
-        super().save(force_insert, validate, clean, write_concern, cascade, cascade_kwargs, _refs, save_condition, signal_kwargs)
-
-
-class Album(TimedDocument):
-    title = mongo.StringField(max_length=64, required=True)
-    user_id = mongo.IntField()
-
-
-class Photo(mongo.Document):
-    title = mongo.StringField(max_length=130, required=True)
-    uuid = mongo.UUIDField(binary=False)
-
-    filename_1920 = mongo.StringField()
-    filename_1080 = mongo.StringField()
-    filename_480 = mongo.StringField()
-    filename_150 = mongo.StringField()
-    filename_25 = mongo.StringField()
-    sizes = mongo.ListField()
-
-    img_ratio = mongo.FloatField()
-    user_id = mongo.IntField()
-    created_at = mongo.DateTimeField()
-    updated_at = mongo.DateTimeField()
-    is_deleted = mongo.BooleanField(default=False)
-    deleted_time = mongo.DateTimeField()
-
-    def save(self, force_insert=False, validate=True, clean=True, write_concern=None, cascade=None, cascade_kwargs=None, _refs=None, save_condition=None, signal_kwargs=None, **kwargs):
-        if self.id:  # update
-            self.updated_at = datetime.now()
-        else:  # create
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
             self.uuid = uuid.uuid5(uuid.uuid4(), str(self.user_id))
-        super(Photo, self).save(force_insert, validate, clean, write_concern, cascade, cascade_kwargs, _refs, save_condition, signal_kwargs)
+        super(Photo, self).save(force_insert, force_update, using, update_fields)
 
     def set_filenames(self, filenames_size: dict):
         for size in rendition_sizes:
@@ -90,3 +67,26 @@ class Photo(mongo.Document):
         for _, filename in self.filenames:
             default_storage.delete(filename)
         super(Photo, self).delete(signal_kwargs, **write_concern)
+
+
+class Album(models.Model):
+    title = models.CharField(max_length=64)
+    photos_json = models.JSONField(blank=True, null=True)
+
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_photos(self):
+        photo_ids = json.loads(self.photos_json)
+        return Photo.objects.filter(id__in=list(photo_ids))
+
+    def set_photos(self, photos: models.QuerySet):
+        photo_ids = photos.values_list('id', flat=True)
+        self.photos_json = json.dumps(photo_ids)
+        self.save()
+
+    photos = property(get_photos, set_photos)

@@ -15,7 +15,7 @@ from gallery.utils.thumbnail import get_thumbnails
 
 def list_photo_view(request):
     # photos = filter(user_id=request.user.id)
-    photos = Photo.objects.all_fields()
+    photos = Photo.objects.all()
     return render(request, 'gallery/list_photo.html', {'photo_objects': photos})
 
 
