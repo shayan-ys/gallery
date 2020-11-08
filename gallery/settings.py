@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from google.oauth2 import service_account
+from mongoengine import connect
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,6 +61,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'gallery.context_processor.rendition_sizes_renderer',
+                'gallery.context_processor.sizes_renderer',
+                'gallery.context_processor.settings_renderer',
             ],
         },
     },
@@ -77,6 +81,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+connect('gallery', host='mongodb+srv://local_django:1pB5aYAuXiNuBz4h@cluster0.46etg.mongodb.net/gallery-photo-urls.gallery?retryWrites=true&w=majority')
 
 
 # Password validation
@@ -111,12 +116,23 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_URL = '/uploads/'
-MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'portfolio-gallery'
 GS_CLASS = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     BASE_DIR / 'avid-bricolage-277519-50dd620c72a0.json'
 )
+try:
+    from urllib.parse import urljoin, urlparse
+    from storages.backends.gcloud import GoogleCloudStorage
+    gs_url = GoogleCloudStorage().url('')
+    GS_BASE_URL = urljoin(gs_url, urlparse(gs_url).path)
+except:
+    GS_BASE_URL = "https://storage.googleapis.com/portfolio-gallery/"
+
+# Constants
+THUMBNAIL_SIZE = 293
