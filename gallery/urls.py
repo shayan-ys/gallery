@@ -18,11 +18,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from gallery import views
+from . import views
 
 urlpatterns = [
-    path('', views.list_photo_view, name='list'),
-    path('upload/', views.upload_photo_handler, name='upload'),
+    path('<int:user_id>/<str:album_slug>/', views.list_photo_view, name='list'),
+    path('albums/', views.AlbumListView.as_view(), name='albums'),
+    path('upload/<str:album_id>/', views.upload_photo_handler, name='upload'),
     path('delete/<str:pk>/', views.delete_photo_view, name='delete'),
 
     path('admin/', admin.site.urls),
