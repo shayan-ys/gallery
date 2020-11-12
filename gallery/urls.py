@@ -21,10 +21,10 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    path('<int:user_id>/<str:album_slug>/', views.list_photo_view, name='list'),
-    path('albums/', views.AlbumListView.as_view(), name='albums'),
-    path('upload/<str:album_id>/', views.upload_photo_handler, name='upload'),
-    path('delete/<str:pk>/', views.delete_photo_view, name='delete'),
+    path('<int:user_id>/<str:category_slug>/', views.list_photo_view, name='list'),
+    path('categories/', views.CategoryListView.as_view(), name='albums'),
+    path('upload/<int:category_id>/', views.upload_photo_handler, name='upload'),
+    # path('delete/<str:pk>/', views.delete_photo_view, name='delete'),
 
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

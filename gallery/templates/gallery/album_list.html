@@ -1,9 +1,0 @@
-<h2>Albums</h2>
-
-<ul>
-{% for album in object_list %}
-    <li>{{ album }} - <a href="{% url 'upload' album.id %}">upload</a></li>
-{% empty %}
-    <li>No articles yet.</li>
-{% endfor %}
-</ul>

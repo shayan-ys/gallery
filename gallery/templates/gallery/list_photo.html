@@ -1,31 +1,39 @@
-{% extends 'gallery/base.html' %}
-{% load static %}
-{% load photo_utils %}
-{% load size_utils %}
-
-{% block head_end %}
-    <link rel="stylesheet" href="{% static 'photoswipe/photoswipe.css' %}">
-    <link rel="stylesheet" href="{% static 'photoswipe/default-skin.css' %}">
-{% endblock %}
-
-{% block body %}
-    <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
-        {% for photo in photo_objects %}
-
-            <figure itemprop="associatedMedia" id="img_figure_id_{{ photo.pk }}" itemscope itemtype="http://schema.org/ImageObject">
-                <a href="{{ photo|url:1920 }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:1920 }}">
-                    <img src="{{ photo|url:480 }}" itemprop="thumbnail" alt="{{ photo.title }}" />
-                </a>
-                <figcaption itemprop="caption description">{{ photo.title }}</figcaption>
-            </figure>
-
-        {% endfor %}
-    </div>
-{% endblock %}
-
-{% block body_end %}
-    {% include 'gallery/include/photoswipe_element.html' %}
-    <script src="{% static 'photoswipe/photoswipe.min.js' %}"></script>
-    <script src="{% static 'photoswipe/photoswipe-ui-default.js' %}"></script>
-    <script src="{% static 'js/photoswipe-init.js' %}"></script>
-{% endblock %}
+<ul>
+{% for photo in photo_objects %}
+    <li>
+    {{ photo.title }}
+    </li>
+{% endfor %}
+</ul>
+{{ test }}
+{#{% extends 'gallery/base.html' %}#}
+{#{% load static %}#}
+{#{% load photo_utils %}#}
+{#{% load size_utils %}#}
+{##}
+{#{% block head_end %}#}
+{#    <link rel="stylesheet" href="{% static 'photoswipe/photoswipe.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'photoswipe/default-skin.css' %}">#}
+{#{% endblock %}#}
+{##}
+{#{% block body %}#}
+{#    <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">#}
+{#        {% for photo in photo_objects %}#}
+{##}
+{#            <figure itemprop="associatedMedia" id="img_figure_id_{{ photo.pk }}" itemscope itemtype="http://schema.org/ImageObject">#}
+{#                <a href="{{ photo|url:1920 }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:1920 }}">#}
+{#                    <img src="{{ photo|url:480 }}" itemprop="thumbnail" alt="{{ photo.title }}" />#}
+{#                </a>#}
+{#                <figcaption itemprop="caption description">{{ photo.title }}</figcaption>#}
+{#            </figure>#}
+{##}
+{#        {% endfor %}#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block body_end %}#}
+{#    {% include 'gallery/include/photoswipe_element.html' %}#}
+{#    <script src="{% static 'photoswipe/photoswipe.min.js' %}"></script>#}
+{#    <script src="{% static 'photoswipe/photoswipe-ui-default.js' %}"></script>#}
+{#    <script src="{% static 'js/photoswipe-init.js' %}"></script>#}
+{#{% endblock %}#}
