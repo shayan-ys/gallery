@@ -1,19 +1,18 @@
 import datetime
 import uuid
 
-from django.http import HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.views.generic.list import ListView
 from django.urls import reverse
-from django.conf import settings
 
 from .forms import PhotoUploadForm
-# from .models import Photo, Album
 from .models import Category
 from .utils import get_bytes
 from .utils.watermark import add_watermark
 from .utils.thumbnail import get_thumbnails
+from .mongo import MONGO
 
 
 class CategoryListView(ListView):
@@ -38,7 +37,7 @@ def list_photo_view(request, user_id: int, category_slug: str):
 #     return JsonResponse({'deleted': 1})
 
 def get_photo_document(user_id: int, category_id: int):
-    return settings.MONGO.photos[f'user_{user_id}'][f'category_{category_id}']
+    return MONGO.photos[f'user_{user_id}'][f'category_{category_id}']
 
 
 def upload_photo_handler(request, category_id: int):
@@ -48,6 +47,7 @@ def upload_photo_handler(request, category_id: int):
 
         # check whether it's valid:
         if form.is_valid():
+            category = Category.objects.get(id=category_id)
             user_id = request.user.id
             photo_db = {
                 'title': form.cleaned_data['title'],
@@ -57,7 +57,8 @@ def upload_photo_handler(request, category_id: int):
             photo_db = handle_uploaded_file(request.FILES['file'], photo_db)
             document = get_photo_document(user_id, category_id)
             photo_id = document.insert_one(photo_db).inserted_id
-            return HttpResponseRedirect(reverse('list'))
+
+            return HttpResponseRedirect(reverse('list', kwargs={'user_id': user_id, 'category_slug': category.slug}))
 
         # if a GET (or any other method) we'll create a blank form
     else:
