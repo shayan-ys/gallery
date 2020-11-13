@@ -22,7 +22,7 @@ from . import views
 
 urlpatterns = [
     path('<int:user_id>/<str:category_slug>/', views.list_photo_view, name='list'),
-    path('categories/', views.CategoryListView.as_view(), name='albums'),
+    path('categories/', views.CategoryListView.as_view(), name='categories'),
     path('upload/<int:category_id>/', views.upload_photo_handler, name='upload'),
     # path('delete/<str:pk>/', views.delete_photo_view, name='delete'),
 

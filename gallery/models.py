@@ -18,3 +18,6 @@ class Category(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.slug = slugify(self.title)
         super().save(force_insert, force_update, using, update_fields)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
