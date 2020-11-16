@@ -26,11 +26,17 @@ body {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.nav li a.active {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom-color: #000000;
 }
 
 /* Change the link color to #111 (black) on hover */
 .nav li a:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(0, 0, 0, 0.08);
   color: #000000;
 }
 

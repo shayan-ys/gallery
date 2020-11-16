@@ -8,7 +8,7 @@ from django.views.generic.list import ListView
 from django.urls import reverse
 
 from .forms import PhotoUploadForm
-from .models import Category
+from .models import Category, Navbar
 from .utils import get_bytes
 from .utils.watermark import add_watermark
 from .utils.thumbnail import get_thumbnails
@@ -23,9 +23,10 @@ class CategoryListView(ListView):
 
 
 def list_photo_view(request, user_id: int, category_slug: str):
+    navbar = Navbar.objects.get(user_id=user_id)
     category = Category.objects.get(slug=category_slug)
     photos = get_photo_document(user_id, category.id).find()
-    return render(request, 'gallery/list_photo.html', {'photo_objects': photos})
+    return render(request, 'gallery/list_photo.html', {'photo_objects': photos, 'category': category, 'navbar': navbar})
 
 
 # def delete_photo_view(request, pk):
