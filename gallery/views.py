@@ -1,62 +1,73 @@
 import datetime
-from bson.errors import InvalidId
+import uuid
 
-from django.http import HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.views.generic.list import ListView
 from django.urls import reverse
 
 from .forms import PhotoUploadForm
-from .models import Photo, Album
+from .models import Category
 from .utils import get_bytes
 from .utils.watermark import add_watermark
 from .utils.thumbnail import get_thumbnails
+from .mongo import MONGO
 
 
-class AlbumListView(ListView):
-    model = Album
+class CategoryListView(ListView):
+    model = Category
 
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user).all()
 
 
-def list_photo_view(request, user_id: int, album_slug: str):
-    # photos = filter(user_id=request.user.id)
-    photos = Photo.objects.all()
+def list_photo_view(request, user_id: int, category_slug: str):
+    category = Category.objects.get(slug=category_slug)
+    photos = get_photo_document(user_id, category.id).find()
     return render(request, 'gallery/list_photo.html', {'photo_objects': photos})
 
 
-def delete_photo_view(request, pk):
-    try:
-        # Photo.objects.get(user_id=request.user.id, id=pk).delete()
-        pass
-    except (Photo.DoesNotExist, InvalidId):
-        raise Http404
-    return JsonResponse({'deleted': 1})
+# def delete_photo_view(request, pk):
+#     try:
+#         # Photo.objects.get(user_id=request.user.id, id=pk).delete()
+#         pass
+#     except (Photo.DoesNotExist, InvalidId):
+#         raise Http404
+#     return JsonResponse({'deleted': 1})
+
+def get_photo_document(user_id: int, category_id: int):
+    return MONGO.photos[f'user_{user_id}'][f'category_{category_id}']
 
 
-def upload_photo_handler(request, album_id: str):
+def upload_photo_handler(request, category_id: int):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = PhotoUploadForm(request.POST, request.FILES)
 
-        album = Album.objects.get(id=album_id)
         # check whether it's valid:
         if form.is_valid():
-            photo_db = Photo(title=form.cleaned_data['title'], user_id=request.user.id)
-            handle_uploaded_file(request.FILES['file'], photo_db)
-            album.add_photo(photo_db)
-            return HttpResponseRedirect(reverse('list'))
+            category = Category.objects.get(id=category_id)
+            user_id = request.user.id
+            photo_db = {
+                'title': form.cleaned_data['title'],
+                'uuid': uuid.uuid1(),
+                'user_id': user_id,
+            }
+            photo_db = handle_uploaded_file(request.FILES['file'], photo_db)
+            document = get_photo_document(user_id, category_id)
+            photo_id = document.insert_one(photo_db).inserted_id
+
+            return HttpResponseRedirect(reverse('list', kwargs={'user_id': user_id, 'category_slug': category.slug}))
 
         # if a GET (or any other method) we'll create a blank form
     else:
         form = PhotoUploadForm()
 
-    return render(request, 'gallery/upload_photo.html', {'form': form, 'album_id': album_id})
+    return render(request, 'gallery/upload_photo.html', {'form': form, 'category_id': category_id})
 
 
-def handle_uploaded_file(photo_file, photo_db: Photo):
+def handle_uploaded_file(photo_file, photo_db: dict):
     photo_filenames = {}
     now = datetime.datetime.now()
 
@@ -64,16 +75,15 @@ def handle_uploaded_file(photo_file, photo_db: Photo):
     for size, thumb in get_thumbnails(signed_photo):
 
         filename = "user_{user_id}/year_{year}/month_{month}/IMG_{uuid}_{size}.jpg".format(
-            user_id=photo_db.user_id, year=now.year, month=now.month, uuid=photo_db.uuid, size=str(size)
+            user_id=photo_db['user_id'], year=now.year, month=now.month, uuid=photo_db['uuid'], size=str(size)
         )
         with default_storage.open(filename, 'wb+') as destination:
 
             bytes_photo = get_bytes(thumb)
             destination.write(bytes_photo)
-            photo_filenames[size] = filename
+            photo_filenames[f'{size}px'] = filename
 
-    photo_db.set_filenames(photo_filenames)
+    photo_db['filenames'] = photo_filenames
     w, h = signed_photo.size
-    photo_db.img_ratio = w / h
-    photo_db.save()
+    photo_db['img_ratio'] = w / h
     return photo_db

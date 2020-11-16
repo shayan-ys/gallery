@@ -6,7 +6,7 @@
 </head>
 <body>
     user id: {{ request.user.id }}
-    <form action="{% url 'upload' album_id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'upload' category_id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Submit">

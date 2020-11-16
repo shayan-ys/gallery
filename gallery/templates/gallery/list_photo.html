@@ -1,6 +1,14 @@
+{#{% load size_utils %}#}
+{#<ul>#}
+{#{% for photo in photo_objects %}#}
+{#    <li>#}
+{#    {{ photo.title }} - {{ photo |url:1920 }} - {{ photo|get_photo_dimensions:1920 }}#}
+{#    </li>#}
+{#{% endfor %}#}
+{#</ul>#}
+{#{{ test }}#}
 {% extends 'gallery/base.html' %}
 {% load static %}
-{% load photo_utils %}
 {% load size_utils %}
 
 {% block head_end %}
