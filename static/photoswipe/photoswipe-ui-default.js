@@ -84,7 +84,11 @@
 						{id:'download', label:'Download image', url:'{{raw_image_url}}', download:true}
 					],
 					getImageURLForShare: function( /* shareButtonData */ ) {
-						return pswp.currItem.src || '';
+						let download_url = '';
+						try {
+							download_url = pswp.currItem.el.dataset.download_url
+						} catch (e) {}
+						return download_url || pswp.currItem.src || '';
 					},
 					getPageURLForShare: function( /* shareButtonData */ ) {
 						return window.location.href;
