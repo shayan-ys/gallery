@@ -14,13 +14,15 @@
 <body>
 <div class="nav">
     <ul>
-        {% block topnave %}{% endblock %}
+        <li class="blank"></li>
+        {% block topnav %}{% endblock %}
         {% for nav_category in navbar.categories.all %}
             <li><a class="{% if nav_category.id == category.id %}active{% endif %}"
                    href="{% url 'list' nav_category.user_id nav_category.slug %}">
                 {{ nav_category }}
             </a></li>
         {% endfor %}
+        <li class="blank right"></li>
         {% if request.user == category.user %}
             <li class="right"><a href="{% url 'categories' %}">Upload</a></li>
         {% endif %}
