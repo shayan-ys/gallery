@@ -11,7 +11,12 @@
     <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
         {% for photo in photo_objects %}
 
-            <figure itemprop="associatedMedia" data-download_url="{{ photo|url:1920 }}" itemscope itemtype="http://schema.org/ImageObject">
+            <figure itemprop="associatedMedia"
+                    data-download_url="{{ photo|url:1920 }}"
+                    {% if request.user == category.user %}
+                        data-delete_url="{% url 'delete' category.id photo.uuid %}"
+                    {% endif %}
+                    itemscope itemtype="http://schema.org/ImageObject">
                 <a href="{{ photo|url:1080 }}" itemprop="contentUrl" data-size="{{ photo|get_photo_dimensions:1080 }}">
                     <img src="{{ photo|url:25 }}" data-src="{{ photo|url:480 }}" class="lazy" itemprop="thumbnail" alt="{{ photo.title }}" />
                 </a>

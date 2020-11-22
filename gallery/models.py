@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
-from django.core.exceptions import ValidationError
 
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey

@@ -30,6 +30,10 @@
 
                 <button class="pswp__button pswp__button--share" title="Share"></button>
 
+                {% if request.user == category.user %}
+                <button class="pswp__button pswp__button--delete" title="Delete"></button>
+                {% endif %}
+
                 <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
 
                 <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>

@@ -67,6 +67,7 @@
 					fullscreenEl: true,
 					zoomEl: true,
 					shareEl: true,
+					deleteEl: true,
 					counterEl: true,
 					arrowEl: true,
 					preloaderEl: true,
@@ -447,6 +448,17 @@
 					},
 					onTap: function() {
 						_toggleShareModal();
+					}
+				},
+				{
+					name: 'button--delete',
+					option: 'deleteEl',
+					onTap: function() {
+						try {
+							if (window.confirm("Are you sure?")) {
+								window.location.href = pswp.currItem.el.dataset.delete_url;
+							}
+						} catch (e) {}
 					}
 				},
 				{

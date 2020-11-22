@@ -29,13 +29,23 @@ def list_photo_view(request, user_id: int, category_slug: str):
     return render(request, 'gallery/list_photo.html', {'photo_objects': photos, 'category': category, 'navbar': navbar})
 
 
-# def delete_photo_view(request, pk):
-#     try:
-#         # Photo.objects.get(user_id=request.user.id, id=pk).delete()
-#         pass
-#     except (Photo.DoesNotExist, InvalidId):
-#         raise Http404
-#     return JsonResponse({'deleted': 1})
+def delete_photo(document, photo: dict):
+    # delete images
+    for _, filename in photo['filenames'].items():
+        default_storage.delete(filename)
+    # delete DB record
+    document.delete_one({"_id": photo['_id']})
+
+
+def delete_photo_view(request, category_id, photo_uuid):
+    category = Category.objects.get(id=category_id)
+    user_id = request.user.id
+    document = get_photo_document(user_id, category_id)
+    photo = document.find_one({"uuid": photo_uuid})
+
+    delete_photo(document, photo)
+    return HttpResponseRedirect(reverse('list', kwargs={'user_id': user_id, 'category_slug': category.slug}))
+
 
 def get_photo_document(user_id: int, category_id: int):
     return MONGO.photos[f'user_{user_id}'][f'category_{category_id}']
@@ -52,7 +62,7 @@ def upload_photo_handler(request, category_id: int):
             user_id = request.user.id
             photo_db = {
                 'title': form.cleaned_data['title'],
-                'uuid': uuid.uuid1(),
+                'uuid': str(uuid.uuid1()),
                 'user_id': user_id,
             }
             photo_db = handle_uploaded_file(request.FILES['file'], photo_db)
