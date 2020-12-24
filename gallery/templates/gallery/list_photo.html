@@ -2,13 +2,13 @@
 {% load static %}
 {% load size_utils %}
 
-{% block head_end %}
+{% block head %}
     <link rel="stylesheet" href="{% static 'photoswipe/photoswipe.css' %}">
     <link rel="stylesheet" href="{% static 'photoswipe/default-skin.css' %}">
 {% endblock %}
 
 {% block body %}
-    <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+    <div class="swipe-gallery" itemscope itemtype="http://schema.org/ImageGallery">
         {% for photo in photo_objects %}
 
             <figure itemprop="associatedMedia"

@@ -6,10 +6,11 @@
     <meta charset="UTF-8">
     <title>Gallery | {% if title %}{{ title }}{% else %}Homepage {% endif %}</title>
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    {% block head_end %}{% endblock %}
+    {% block head %}{% endblock %}
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body>
 <div class="nav">

@@ -1,8 +1,9 @@
 import datetime
 import uuid
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.core.files.storage import default_storage
 from django.views.generic.list import ListView
 from django.urls import reverse
@@ -27,6 +28,16 @@ def list_photo_view(request, user_id: int, category_slug: str):
     category = Category.objects.get(slug=category_slug)
     photos = get_photo_document(user_id, category.id).find()
     return render(request, 'gallery/list_photo.html', {'photo_objects': photos, 'category': category, 'navbar': navbar})
+
+
+def export_static_list_photo_view(request, user_id: int, category_slug: str):
+    response = list_photo_view(request, user_id, category_slug)
+
+    filename = f'user_{user_id}/gallery.html'
+    with default_storage.open(filename, 'wb+') as destination:
+        destination.write(response.getvalue())
+
+    return HttpResponseRedirect(reverse('list', kwargs={'user_id': user_id, 'category_slug': category_slug}))
 
 
 def delete_photo(document, photo: dict):
@@ -69,7 +80,7 @@ def upload_photo_handler(request, category_id: int):
             document = get_photo_document(user_id, category_id)
             photo_id = document.insert_one(photo_db).inserted_id
 
-            return HttpResponseRedirect(reverse('list', kwargs={'user_id': user_id, 'category_slug': category.slug}))
+            return HttpResponseRedirect(reverse('export', kwargs={'user_id': user_id, 'category_slug': category.slug}))
 
         # if a GET (or any other method) we'll create a blank form
     else:
